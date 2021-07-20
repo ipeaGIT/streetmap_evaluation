@@ -12,9 +12,29 @@ source('R/munis_df.R')
 munis_all_df <- geobr::lookup_muni("all") %>% setDT()
 munis_df[munis_all_df, on = .(code_muni), name_muni_pt := i.name_muni]
 
+# File names
 
-streetmap_geocoded_sf <- st_read("../../data/geocode/streetmap_eval/cnefe_sample_streetmap_Geocoded.shp") %>%
+## geocode completo
+streetmap_geocoded_sf <- st_read("../../data/geocode/streetmap_eval/Novos_resultados/cnefe_sample_streetmap_Geocoded_completo.shp") %>%
   mutate(USER_code_ = as.character(USER_code_))
+output_sf <- "../../data/geocode/streetmap_eval/validated_sample_completo.gpkg"
+output_csv <- "../../data/geocode/streetmap_eval/validated_sample_completo.csv"
+
+## geocode address
+streetmap_geocoded_sf <- st_read("../../data/geocode/streetmap_eval/Novos_resultados/cnefe_sample_streetmap_Geocoded_Address.shp") %>%
+  mutate(USER_code_ = as.character(USER_code_))
+output_sf <- "../../data/geocode/streetmap_eval/validated_sample_address.gpkg"
+output_csv <- "../../data/geocode/streetmap_eval/validated_sample_address.csv"
+
+
+## geocode address + zip
+streetmap_geocoded_sf <- st_read("../../data/geocode/streetmap_eval/Novos_resultados/cnefe_sample_streetmap_Geocoded_Address_ZIP.shp") %>%
+  mutate(USER_code_ = as.character(USER_code_))
+output_sf <- "../../data/geocode/streetmap_eval/validated_sample_address_zip.gpkg"
+output_csv <- "../../data/geocode/streetmap_eval/validated_sample_address_zip.csv"
+
+
+# Load sample addresses
 streetmap_sample_df <- read_csv("../../data/geocode/streetmap_eval/cnefe_sample_streetmap.csv") %>%
   mutate(code_tract = as.character(code_tract))
 
@@ -65,8 +85,8 @@ validate_geocoding <- function(muni) {
 
 # apply functions ---------------------------------------------------------
 
-spo_sf <- validate_geocoding(3550308)
-spo_sf %>% filter(geocode_distance < 1000) %>% mapview(zcol="geocode_distance")
+# spo_sf <- validate_geocoding(3550308)
+# spo_sf %>% filter(geocode_distance < 1000) %>% mapview(zcol="geocode_distance")
 
 codes <- unique(munis_df$code_muni)
 validated_sample_sf <- map_df(codes, validate_geocoding)
@@ -77,10 +97,11 @@ validated_sample_sf <- validated_sample_sf %>%
                                     geocode_distance <= 1000 ~ "AVERAGE",
                                     TRUE ~ "BAD"))
 
-validated_sample_sf %>% st_write("../../data/geocode/streetmap_eval/validated_sample.gpkg")
+
+validated_sample_sf %>% st_write(output_sf)
 validated_sample_sf %>%
   st_set_geometry(NULL) %>%
-  write_csv("../../data/geocode/streetmap_eval/validated_sample.csv")
+  write_csv(output_csv)
 
 
 
