@@ -9,7 +9,7 @@ source('R/munis_df.R')
 
 # Load data
 
-validated_sample_df <- read_csv("../../data/geocode/streetmap_eval/validated_sample.csv")
+validated_sample_df <- read_csv("../../data/geocode/streetmap_eval/validated_sample_completo.csv")
 
 # Plots
 
@@ -60,8 +60,8 @@ validated_sample_df %>%
   )
 
 
-geocode_type_levels <- c("PointAddress", "StreetAddress", "StreetAddressExt", "StreetName",
-                         "PostalExt", "PostalLoc", "Postal", "DistanceMarker")
+geocode_type_levels <- c("PointAddress", "StreetAddress", "StreetAddressExt", "StreetName", "POI",
+                         "PostalExt", "PostalLoc", "Postal", "Locality", "DistanceMarker")
 
 validated_sample_df %>%
   filter(geocode_status != "U") %>%
@@ -83,6 +83,31 @@ validated_sample_df %>%
        caption = "VALID: dentro do setor censitário\nGOOD: até 350m do setor censitário\nAVERAGE: até 1km do setor censitário\nBAD: acima de 1km do setor censitário"
   ) +
   facet_wrap(~geocode_status, scales = "free", ncol = 1)
+
+validated_sample_df %>%
+  filter(geocode_status != "U") %>%
+  count(geocode_status, geocode_type, geocode_result) %>%
+  group_by(geocode_status, geocode_type) %>%
+  mutate(p = n / sum(n)) %>%
+  mutate(geocode_type = factor(geocode_type, levels = geocode_type_levels)) %>%
+  mutate(geocode_type = fct_rev(geocode_type)) %>%
+  mutate(geocode_status = factor(geocode_status,
+                                 levels = c("M", "T", "U"),
+                                 labels = c("MATCH", "TIE", "UNMATCH"))) %>%
+  ggplot() + geom_col(aes(x = geocode_type, y = n, fill = geocode_result)) +
+  coord_flip() +
+  scale_fill_brewer(palette = "Set1", direction = 1) +
+  # scale_y_percent() +
+  scale_y_continuous(breaks = seq(0, 10000, 1000), minor_breaks = seq(0, 10000, 250)) +
+  labs(title = "Resultado geral do geocoding, por ADDR_TYPE",
+       x = NULL, y = NULL, fill = NULL,
+       caption = "VALID: dentro do setor censitário\nGOOD: até 350m do setor censitário\nAVERAGE: até 1km do setor censitário\nBAD: acima de 1km do setor censitário"
+  ) +
+  facet_wrap(~geocode_status,  ncol = 1) +
+  theme(legend.position = "bottom")
+
+
+
 
 validated_sample_df %>%
   filter(geocode_status == "M") %>%
