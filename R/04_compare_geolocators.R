@@ -45,7 +45,7 @@ fct_city <- validated_count_by_city %>%
 
 validated_count_by_city %>%
   mutate(city = factor(city, levels = fct_city$city)) %>%
-  filter(geocode_result == "BAD") %>%
+  # filter(geocode_result == "BAD") %>%
   ggplot() +
   geom_col(aes(x=city, y = n, fill = locator, group = locator), position = "dodge") +
   coord_flip() +

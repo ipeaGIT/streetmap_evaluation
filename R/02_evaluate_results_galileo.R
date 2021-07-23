@@ -19,9 +19,7 @@ galileo_geocoded_df <- read_delim("../../data/geocode/streetmap_eval/Galileo/cne
                                   locale = locale(decimal_mark = ",", grouping_mark = ".", encoding = "windows-1250")) %>%
   mutate(code_tract = as.character(code_tract))
 
-galileo_geocoded_sf <- read_delim("../../data/geocode/streetmap_eval/Galileo/cnefe_galileo_output.csv",
-                                  delim = ";", locale = locale(decimal_mark = ",", grouping_mark = ".")) %>%
-  mutate(code_tract = as.character(code_tract)) %>%
+galileo_geocoded_sf <- galileo_geocoded_df %>%
   st_as_sf(coords = c("Longitude", "Latitude"), remove = FALSE, crs = 4326)
 
 output_sf <- "../../data/geocode/streetmap_eval/validated_sample_galileo.gpkg"
