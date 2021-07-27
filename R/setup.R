@@ -58,7 +58,7 @@ library(ggnewscale)
 library(magrittr)
 library(maptools)
 library(rgeos)
-library(XLConnect)
+# library(XLConnect)
 library(geodist)
 
 # options
