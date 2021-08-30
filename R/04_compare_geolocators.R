@@ -84,3 +84,13 @@ validated_count_by_locator %>%
   facet_wrap(~geocode_result, ncol = 1) +
   theme(legend.position = "none")
 
+
+validated_sample_df %>%
+  select(-geocode_result) %>%
+  pivot_wider(names_from = locator, values_from = geocode_distance) %>%
+  ggplot() +
+  geom_point(aes(x=google_maps, y = streetmap_complete)) +
+  scale_x_log10() +
+  scale_y_log10() +
+  geom_abline()
+  View()
