@@ -90,3 +90,5 @@ streetmap_sample_df[, cnefe_id := .I]
 
 write_csv(streetmap_sample_df, "../../data/geocode/streetmap_eval/cnefe_large_sample_streetmap.csv")
 
+
+
